@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import LandingPage from './pages/landingPage.jsx'
 
 function App() {
   const [message, setMessage] = useState("Connecting...");
@@ -14,10 +15,7 @@ function App() {
   }, []);
 
   return (
-    <div>
-    <h1>React → Node Test</h1>
-    <p>{message}</p>
-    </div>
+    <LandingPage />
   );
 }
 
