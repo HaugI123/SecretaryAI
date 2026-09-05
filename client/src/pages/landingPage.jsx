@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import Component from '../components/cameraComponent.jsx';
 
 export default function LandingPage() {
     const [currentScreen, setCS] = useState('ROLE_SELECTION');
     const [submittingInfo, setSubmitting] = useState(false);
+    const [useCamera, setUseCamera] = useState(false);
 
     //Just some fake form data for "login"/verification purposes. We can change this to whatever info we want and change it based on new client vs returning. A returning may only need first name and email or phone, while a new client needs everything etc..
     const [formData, setFormData] = useState({
@@ -256,31 +258,51 @@ export default function LandingPage() {
                 </p>
 
                 <div>
-                    <button>
-                    Upload
+                    <button onClick={() => setUseCamera(true)}>
+                        Upload W2
                     </button>
-                    <p>Upload your W2</p>
+                    {useCamera && (
+                        <Component
+                            onClose={() => setUseCamera(false)}
+                        />
+                    )}
                 </div>
 
                 <div>
-                    <button>
-                    Upload
+                    <button onClick={() => setUseCamera(true)}>
+                        Upload Previous Tax Returns
                     </button>
-                    <p>Previous Tax Returns</p>
+
+                    {useCamera && (
+                        <Component
+                            onClose={() => setUseCamera(false)}
+                        />
+                    )}
                 </div>
 
                 <div>
-                    <button>
-                    Upload
+                    <button onClick={() => setUseCamera(true)}>
+                        Upload Form 1099
                     </button>
-                    <p>Form 1099</p>
+
+                    {useCamera && (
+                        <Component
+                            onClose={() => setUseCamera(false)}
+                        />
+                    )}
                 </div>
 
                 <div>
-                    <button>
-                    Upload Additional Documents (WE CAN ADD MORE/CHANGE LATER THIS IS SKELETON CODE JUST TO HAVE FUNCTIONING SHIT)
+                    <button onClick={() => setUseCamera(true)}>
+                        Upload Additional Documents (WE CAN ADD MORE/CHANGE LATER THIS IS SKELETON CODE JUST TO HAVE FUNCTIONING SHIT)
                     </button>
-                    <p>Any additional documentation requested</p>
+
+                    {useCamera && (
+                        <Component
+                            onClose={() => setUseCamera(false)}
+                        />
+                    )}
+
                 </div>
 
             <br />
