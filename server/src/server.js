@@ -1,6 +1,9 @@
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
+import { createWorker } from 'tesseract.js';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,3 +18,11 @@ app.get("/api/test", (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+
+(async() => {
+    const worker = await createWorker('eng');
+    const ret = await worker.recognize('https://tesseract.projectnaptha.com/img/eng_bw.png');
+    console.log(ret.data.text);
+    await worker.terminate();
+})();
+
