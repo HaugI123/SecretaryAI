@@ -2,6 +2,3 @@ node_modules/
 .env
 dist/
 *.log
-client/vite.config.js
-client/192.168.1.227-key.pem
-client/192.168.1.227.pem

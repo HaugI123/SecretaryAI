@@ -1,6 +1,6 @@
 import {useRef, useState} from "react";
 
-function Component({onClose, documentType}) {
+function Component({onClose}) {
 
     const fileInputRef = useRef(null);
 
@@ -47,7 +47,7 @@ function Component({onClose, documentType}) {
                 Scan Document
             </button>
 
-            <button onClick={onClose}>
+            <button onclick={onClose}>
                 Close
             </button>
 
