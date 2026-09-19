@@ -12,6 +12,8 @@ export default function LandingPage() {
         lastName: '',
         email: '',
         phone: '',
+        ssn_last_four: '',
+        address: '',
     });
 
     const handleInputChange = (e) => {
@@ -131,6 +133,30 @@ export default function LandingPage() {
                     />
 
                     <br />
+
+                    <input
+                    type="ssn_last_four"
+                    name="ssn_last_four"
+                    placeholder="ssn_last_four"
+                    value={formData.ssn_last_four}
+                    onChange={handleInputChange}
+                    required
+                    />
+
+                    <br />
+
+                    <input
+                    type="address"
+                    name="address"
+                    placeholder="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    required
+                    />
+
+                    
+
+                    <br />
                     <br />
 
                     <button type="submit" disabled={submittingInfo}>
@@ -196,6 +222,24 @@ export default function LandingPage() {
                     name="phone"
                     placeholder="Phone Number"
                     value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                    />
+
+                    <input
+                    type="ssn_last_four"
+                    name="ssn_last_four"
+                    placeholder="ssn_last_four"
+                    value={formData.ssn_last_four}
+                    onChange={handleInputChange}
+                    required
+                    />
+
+                    <input
+                    type="address"
+                    name="address"
+                    placeholder="address"
+                    value={formData.address}
                     onChange={handleInputChange}
                     required
                     />
