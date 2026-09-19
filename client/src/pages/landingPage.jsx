@@ -30,11 +30,24 @@ function ScreenShell({ eyebrow, title, description, children, onBack }) {
     );
 }
 
+const languageOptions = [
+    { code: 'en', label: 'English', greeting: 'Hi, I’m Ava. I’ll help you get everything ready.' },
+    { code: 'es', label: 'Español', greeting: 'Hola, soy Ava. Te ayudaré a preparar todo.' },
+    { code: 'fr', label: 'Français', greeting: 'Bonjour, je suis Ava. Je vais vous aider à tout préparer.' },
+    { code: 'pt', label: 'Português', greeting: 'Olá, sou Ava. Vou ajudar você a preparar tudo.' },
+    { code: 'zh', label: '中文', greeting: '你好，我是 Ava。我会帮助你准备好一切。' },
+    { code: 'vi', label: 'Tiếng Việt', greeting: 'Xin chào, tôi là Ava. Tôi sẽ giúp bạn chuẩn bị mọi thứ.' },
+    { code: 'ko', label: '한국어', greeting: '안녕하세요, Ava입니다. 필요한 준비를 도와드리겠습니다.' },
+    { code: 'ar', label: 'العربية', greeting: 'مرحبًا، أنا Ava. سأساعدك في تجهيز كل شيء.' },
+    { code: 'tl', label: 'Tagalog', greeting: 'Kumusta, ako si Ava. Tutulungan kitang ihanda ang lahat.' },
+];
+
 export default function LandingPage() {
     const [currentScreen, setCS] = useState('ROLE_SELECTION');
     const [submittingInfo, setSubmitting] = useState(false);
     const [testUpload, setTest] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
+    const [selectedLanguage, setSelectedLanguage] = useState(null);
 
     //Just some fake form data for "login"/verification purposes. We can change this to whatever info we want and change it based on new client vs returning. A returning may only need first name and email or phone, while a new client needs everything etc..
     const [formData, setFormData] = useState({
@@ -142,7 +155,7 @@ export default function LandingPage() {
                 description="Choose the path that brings you to the right place. Your information stays private and secure."
             >
                 <div className="choice-grid">
-                    <button className="choice-card" onClick={() => setCS('CLIENT_SELECTION')}>
+                    <button className="choice-card" onClick={() => setCS('LANGUAGE_SELECTION')}>
                         <span className="choice-icon" aria-hidden="true">&#8594;</span>
                         <span>
                             <strong>I’m a client</strong>
@@ -156,6 +169,38 @@ export default function LandingPage() {
                             <small>Access the preparer workspace</small>
                         </span>
                     </button>
+                </div>
+            </ScreenShell>
+        );
+    }
+
+    if (currentScreen === 'LANGUAGE_SELECTION') {
+        return (
+            <ScreenShell
+                eyebrow="Ava, your intake assistant"
+                title="How would you like to continue?"
+                description="Choose the language you’re most comfortable using. You can change it later."
+                onBack={() => setCS('ROLE_SELECTION')}
+            >
+                <div className="assistant-message">
+                    <span className="assistant-avatar">A</span>
+                    <p>Welcome. I’ll guide you through each step and keep things simple.</p>
+                </div>
+                <div className="language-grid">
+                    {languageOptions.map((language) => (
+                        <button
+                            className="language-option"
+                            key={language.code}
+                            onClick={() => {
+                                setSelectedLanguage(language);
+                                setCS('CLIENT_SELECTION');
+                            }}
+                        >
+                            <span className="language-code">{language.code.toUpperCase()}</span>
+                            <span>{language.label}</span>
+                            <span className="language-arrow" aria-hidden="true">&#8594;</span>
+                        </button>
+                    ))}
                 </div>
             </ScreenShell>
         );
@@ -185,6 +230,12 @@ export default function LandingPage() {
                         </span>
                     </button>
                 </div>
+                {selectedLanguage && (
+                    <div className="assistant-message assistant-message-bottom">
+                        <span className="assistant-avatar">A</span>
+                        <p>{selectedLanguage.greeting} What would you like to do today?</p>
+                    </div>
+                )}
             </ScreenShell>
         );
     }
@@ -198,6 +249,10 @@ export default function LandingPage() {
                 onBack={() => setCS('CLIENT_SELECTION')}
             >
                 <form className="intake-form" onSubmit={handleNewClientSubmit}>
+                    <div className="assistant-message assistant-message-form">
+                        <span className="assistant-avatar">A</span>
+                        <p>Let’s start with the basics. I’ll only ask for what your preparer needs.</p>
+                    </div>
                     <div className="form-grid">
                         <label>First name
                             <input type="text" name="firstName" placeholder="Jordan" value={formData.firstName} onChange={handleInputChange} required />
