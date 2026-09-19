@@ -261,7 +261,7 @@ export default function LandingPage() {
                             <input type="text" name="lastName" placeholder="Lee" value={formData.lastName} onChange={handleInputChange} required />
                         </label>
                         <label className="field-wide">Email address
-                            <input type="email" name="email" placeholder="you@example.com" value={formData.email} onChange={handleInputChange} pattern="[^\\s@]+@[^\\s@]+\\.[^\\s@]+" required />
+                            <input type="email" name="email" placeholder="you@example.com" value={formData.email} onChange={handleInputChange} pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}" required />
                             {renderError('email')}
                         </label>
                         <label>Phone number
@@ -301,7 +301,7 @@ export default function LandingPage() {
                             <input type="text" name="lastName" placeholder="Lee" value={formData.lastName} onChange={handleInputChange} required />
                         </label>
                         <label className="field-wide">Email address
-                            <input type="email" name="email" placeholder="you@example.com" value={formData.email} onChange={handleInputChange} pattern="[^\\s@]+@[^\\s@]+\\.[^\\s@]+" required />
+                            <input type="email" name="email" placeholder="you@example.com" value={formData.email} onChange={handleInputChange} pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}" required />
                             {renderError('email')}
                         </label>
                         <label>Phone number
