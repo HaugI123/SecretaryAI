@@ -332,7 +332,7 @@ export default function LandingPage() {
                 description="Sign in to manage client intake and keep every return moving forward."
                 onBack={() => setCS('ROLE_SELECTION')}
             >
-                <form className="intake-form" onSubmit={(event) => { event.preventDefault(); alert('Employee login would be handled here.'); }}>
+                <form className="intake-form" onSubmit={(event) => { event.preventDefault(); setCS('EMPLOYEE_DASHBOARD'); }}>
                     <label>Email or username
                         <input type="text" placeholder="you@secretaryai.com" required />
                     </label>
@@ -362,6 +362,22 @@ export default function LandingPage() {
             </ScreenShell>
         );
     }
+
+     if (currentScreen === 'EMPLOYEE_DASHBOARD') {
+        return (
+         <ScreenShell
+             eyebrow="Team workspace"
+              title="Employee Dashboard"
+             description="Welcome to the employee workspace."
+              onBack={() => setCS('EMPLOYEE_LOGIN')}
+        >
+             <div>
+                  <h2>Employee Dashboard</h2>
+                  <p>Employee tools will go here.</p>
+             </div>
+         </ScreenShell>
+     );
+}
 
     return (
         <ScreenShell eyebrow="SecretaryAI" title="Something went wrong." onBack={() => setCS('ROLE_SELECTION')}>
