@@ -364,19 +364,104 @@ export default function LandingPage() {
     }
 
      if (currentScreen === 'EMPLOYEE_DASHBOARD') {
-        return (
-         <ScreenShell
-             eyebrow="Team workspace"
-              title="Employee Dashboard"
-             description="Welcome to the employee workspace."
-              onBack={() => setCS('EMPLOYEE_LOGIN')}
+    return (
+        <ScreenShell
+            eyebrow="Team workspace"
+            title="Employee Dashboard"
+            description="Manage your clients and quickly access recent records."
+            onBack={() => setCS('EMPLOYEE_LOGIN')}
         >
-             <div>
-                  <h2>Employee Dashboard</h2>
-                  <p>Employee tools will go here.</p>
-             </div>
-         </ScreenShell>
-     );
+            <div className="employee-dashboard">
+
+                {/* Search bar */}
+                <div className="dashboard-search">
+                    <input
+                        type="text"
+                        placeholder="Search clients..."
+                    />
+                    <button type="button">
+                        &#128269;
+                    </button>
+                </div>
+
+                {/* Two-column layout */}
+                <div className="dashboard-columns">
+
+                    {/* Client list */}
+                    <section className="dashboard-panel">
+                        <div className="dashboard-panel-header">
+                            <h2>Client List</h2>
+                            <span>All clients</span>
+                        </div>
+
+                        <div className="client-list">
+
+                            <button className="client-card">
+                                <strong>Matthew steen</strong>
+                                <small>Email: MSteen@example.com</small>
+                                <small>Phone: 417-893-1689</small>
+                                <small>Address: 123 Question Street</small>
+                            </button>
+
+                            <button className="client-card">
+                                <strong>Branda Stop</strong>
+                                <small>Email: StopB@example.com</small>
+                                <small>Phone: 617-290-9164</small>
+                                <small>Address: 384 Oak Street</small>
+                            </button>
+
+                            <button className="client-card">
+                                <strong>Robert Johnson</strong>
+                                <small>Email: robert@example.com</small>
+                                <small>Phone: 555-555-5555</small>
+                                <small>Address: 789 God Road</small>
+                            </button>
+
+                        </div>
+
+                        <button
+                            className="button button-primary dashboard-register"
+                            type="button"
+                            onClick={() => setCS('CLIENT_SELECTION')}
+                        >
+                            Register New Client
+                            <span aria-hidden="true">&#8594;</span>
+                        </button>
+                    </section>
+
+
+                    {/* Recent clients */}
+                    <section className="dashboard-panel">
+                        <div className="dashboard-panel-header">
+                            <h2>Recent</h2>
+                            <span>Recently viewed</span>
+                        </div>
+
+                        <div className="recent-list">
+
+                            <button className="recent-client">
+                                <strong>Matthew steen</strong>
+                                <small>Recently viewed</small>
+                            </button>
+
+                            <button className="recent-client">
+                                <strong>Branda Stop</strong>
+                                <small>Recently viewed</small>
+                            </button>
+
+                            <button className="recent-client">
+                                <strong>Robert Johnson</strong>
+                                <small>Recently viewed</small>
+                            </button>
+
+                        </div>
+                    </section>
+
+                </div>
+
+            </div>
+        </ScreenShell>
+    );
 }
 
     return (
