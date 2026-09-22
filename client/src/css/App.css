@@ -410,7 +410,6 @@
 .recent-client {
     width: 100%;
     padding: 14px;
-    padding: 0;
     text-align: left;
     border: none;
     border-bottom: 1px solid rgba(148, 163, 184, 0.22);
@@ -418,8 +417,6 @@
     background: transparent;
     cursor: pointer;
     font-size: 15px;
-    box-shadow: none;
-    transition: background 0.15s ease;
 }
 
 .recent-client:hover {
