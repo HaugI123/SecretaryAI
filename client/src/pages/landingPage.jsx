@@ -42,12 +42,32 @@ const languageOptions = [
     { code: 'tl', label: 'Tagalog', greeting: 'Kumusta, ako si Ava. Tutulungan kitang ihanda ang lahat.' },
 ];
 
+const ADMIN_CREDENTIALS = {
+    username: 'Admin001',
+    password: 'Admin001@',
+};
+
 export default function LandingPage() {
     const [currentScreen, setCS] = useState('ROLE_SELECTION');
     const [submittingInfo, setSubmitting] = useState(false);
     const [testUpload, setTest] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
     const [selectedLanguage, setSelectedLanguage] = useState(null);
+    const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+    const [loginError, setLoginError] = useState('');
+
+    const getStoredSession = () => {
+        try {
+            const session = localStorage.getItem('secretaryAiTeamSession');
+            return session ? JSON.parse(session) : null;
+        } catch (error) {
+            return null;
+        }
+    };
+
+    const clearStoredSession = () => {
+        localStorage.removeItem('secretaryAiTeamSession');
+    };
 
     //Just some fake form data for "login"/verification purposes. We can change this to whatever info we want and change it based on new client vs returning. A returning may only need first name and email or phone, while a new client needs everything etc..
     const [formData, setFormData] = useState({
@@ -64,6 +84,18 @@ export default function LandingPage() {
             ...formData,
             [e.target.name]: e.target.value
         });
+    };
+
+    const resetClientForm = () => {
+        setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            ssn_last_four: '',
+            address: '',
+        });
+        setValidationErrors({});
     };
 
     const validateForm = () => {
@@ -146,6 +178,52 @@ export default function LandingPage() {
         }, 1200);
     };
 
+    const handleLoginInputChange = (e) => {
+        setLoginForm({
+            ...loginForm,
+            [e.target.name]: e.target.value,
+        });
+
+        if (loginError) {
+            setLoginError('');
+        }
+    };
+
+    const handleEmployeeLogin = (event) => {
+        event.preventDefault();
+
+        const submittedUsername = loginForm.username.trim();
+        const submittedPassword = loginForm.password;
+
+        if (submittedUsername !== ADMIN_CREDENTIALS.username || submittedPassword !== ADMIN_CREDENTIALS.password) {
+            setLoginError('Invalid username or password. Use Admin001 and Admin001@.');
+            return;
+        }
+
+        const session = {
+            username: submittedUsername,
+            loggedInAt: new Date().toISOString(),
+        };
+
+        localStorage.setItem('secretaryAiTeamSession', JSON.stringify(session));
+        setCS('EMPLOYEE_DASHBOARD');
+    };
+
+    const handleLogout = () => {
+        clearStoredSession();
+        setLoginForm({ username: '', password: '' });
+        setLoginError('');
+        setCS('EMPLOYEE_LOGIN');
+    };
+
+    const goBackToRoleSelection = () => {
+        resetClientForm();
+        setSelectedLanguage(null);
+        setCS('ROLE_SELECTION');
+    };
+
+    const session = getStoredSession();
+    const isAuthenticated = Boolean(session && session.username === ADMIN_CREDENTIALS.username);
 
     if (currentScreen === 'ROLE_SELECTION') {
         return (
@@ -180,7 +258,7 @@ export default function LandingPage() {
                 eyebrow="Ava, your intake assistant"
                 title="How would you like to continue?"
                 description="Choose the language you’re most comfortable using. You can change it later."
-                onBack={() => setCS('ROLE_SELECTION')}
+                onBack={goBackToRoleSelection}
             >
                 <div className="assistant-message">
                     <span className="assistant-avatar">A</span>
@@ -212,7 +290,7 @@ export default function LandingPage() {
                 eyebrow="Client portal / 01"
                 title="Welcome back."
                 description="Tell us where you are in the process so we can personalize your next step."
-                onBack={() => setCS('ROLE_SELECTION')}
+                onBack={goBackToRoleSelection}
             >
                 <div className="choice-grid">
                     <button className="choice-card choice-card-accent" onClick={() => setCS('NEW_CLIENT')}>
@@ -246,7 +324,10 @@ export default function LandingPage() {
                 eyebrow="New client / 02"
                 title="A few details to begin."
                 description="Complete your profile below. We’ll use this information to prepare your secure document checklist."
-                onBack={() => setCS('CLIENT_SELECTION')}
+                onBack={() => {
+                    resetClientForm();
+                    setCS('CLIENT_SELECTION');
+                }}
             >
                 <form className="intake-form" onSubmit={handleNewClientSubmit}>
                     <div className="assistant-message assistant-message-form">
@@ -290,7 +371,10 @@ export default function LandingPage() {
                 eyebrow="Returning client / 02"
                 title="Let’s pick up where you left off."
                 description="Confirm the details we have on file and we’ll take you to your document checklist."
-                onBack={() => setCS('CLIENT_SELECTION')}
+                onBack={() => {
+                    resetClientForm();
+                    setCS('CLIENT_SELECTION');
+                }}
             >
                 <form className="intake-form" onSubmit={handleVerifyClientSubmit}>
                     <div className="form-grid">
@@ -332,13 +416,30 @@ export default function LandingPage() {
                 description="Sign in to manage client intake and keep every return moving forward."
                 onBack={() => setCS('ROLE_SELECTION')}
             >
-                <form className="intake-form" onSubmit={(event) => { event.preventDefault(); setCS('EMPLOYEE_DASHBOARD'); }}>
-                    <label>Email or username
-                        <input type="text" placeholder="you@secretaryai.com" required />
+                <form className="intake-form" onSubmit={handleEmployeeLogin}>
+                    <label>Username
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Admin001"
+                            value={loginForm.username}
+                            onChange={handleLoginInputChange}
+                            required
+                        />
                     </label>
                     <label>Password
-                        <input type="password" placeholder="Enter your password" required />
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            value={loginForm.password}
+                            onChange={handleLoginInputChange}
+                            required
+                        />
                     </label>
+                    {loginError && (
+                        <p className="field-error" role="alert">{loginError}</p>
+                    )}
                     <button className="button button-primary" type="submit">Sign in <span aria-hidden="true">&#8594;</span></button>
                 </form>
             </ScreenShell>
@@ -364,58 +465,83 @@ export default function LandingPage() {
     }
 
      if (currentScreen === 'EMPLOYEE_DASHBOARD') {
-    return (
-        <ScreenShell
-            eyebrow="Team workspace"
-            title="Employee Dashboard"
-            description="Manage your clients and quickly access recent records."
-            onBack={() => setCS('EMPLOYEE_LOGIN')}
-        >
-            <div className="employee-dashboard">
-
-                {/* Search bar */}
-                <div className="dashboard-search">
-                    <input
-                        type="text"
-                        placeholder="Search clients..."
-                    />
-                    <button type="button">
-                        &#128269;
+        if (!isAuthenticated) {
+            return (
+                <ScreenShell
+                    eyebrow="Team workspace"
+                    title="Session expired"
+                    description="Your sign-in session is invalid or has expired. Please sign in again."
+                    onBack={() => setCS('ROLE_SELECTION')}
+                >
+                    <button className="button button-primary" onClick={() => setCS('EMPLOYEE_LOGIN')}>
+                        Return to sign in <span aria-hidden="true">&#8594;</span>
                     </button>
-                </div>
+                </ScreenShell>
+            );
+        }
 
-                {/* Two-column layout */}
-                <div className="dashboard-columns">
-
-                    {/* Client list */}
-                    <section className="dashboard-panel">
-                        <div className="dashboard-panel-header">
-                            <h2>Client List</h2>
-                            <span>All clients</span>
+        return (
+            <ScreenShell
+                eyebrow="Team workspace"
+                title="Employee Dashboard"
+                description="Manage your clients and quickly access recent records."
+                onBack={handleLogout}
+            >
+                <div className="employee-dashboard">
+                    <div className="dashboard-topbar">
+                        <div className="dashboard-greeting">
+                            <span className="dashboard-pill">Live</span>
+                            <div>
+                                <p className="dashboard-kicker">Welcome back</p>
+                                <h3>Admin001</h3>
+                            </div>
                         </div>
 
                         <div className="client-list">
 
-                            <button className="client-card">
-                                <strong>Matthew steen</strong>
-                                <small>Email: MSteen@example.com</small>
-                                <small>Phone: 417-893-1689</small>
-                                <small>Address: 123 Question Street</small>
-                            </button>
+                            <div className="client-table-container">
+                         <table className="client-table">
+                             <thead>
+                              <tr>
+                                  <th>No.</th>
+                                  <th>First Name</th>
+                                  <th>Last Name</th>
+                                  <th>Email</th>
+                                  <th>Phone Number</th>
+                                  <th>Address</th>
+                             </tr>
+                         </thead>
 
-                            <button className="client-card">
-                                <strong>Branda Stop</strong>
-                                <small>Email: StopB@example.com</small>
-                                <small>Phone: 617-290-9164</small>
-                                <small>Address: 384 Oak Street</small>
-                            </button>
+                         <tbody>
+                                <tr>
+                                 <td>1</td>
+                                 <td>Matthew</td>
+                                 <td>Steen</td>
+                                 <td>MSteen@example.com</td>
+                                 <td>417-893-1689</td>
+                                  <td>123 Question Street</td>
+                              </tr>
 
-                            <button className="client-card">
-                                <strong>Robert Johnson</strong>
-                                <small>Email: robert@example.com</small>
-                                <small>Phone: 555-555-5555</small>
-                                <small>Address: 789 God Road</small>
-                            </button>
+                              <tr>
+                                  <td>2</td>
+                                  <td>Branda</td>
+                                 <td>Stop</td>
+                                  <td>StopB@example.com</td>
+                                 <td>617-290-9164</td>
+                                  <td>384 Oak Street</td>
+                              </tr>
+
+                             <tr>
+                                 <td>3</td>
+                                 <td>Robert</td>
+                                 <td>Johnson</td>
+                                 <td>robert@example.com</td>
+                                 <td>555-555-5555</td>
+                                 <td>789 God Road</td>
+                             </tr>
+                              </tbody>
+                         </table>
+                    </div>
 
                         </div>
 
@@ -427,42 +553,154 @@ export default function LandingPage() {
                             Register New Client
                             <span aria-hidden="true">&#8594;</span>
                         </button>
-                    </section>
+                    </div>
 
-
-                    {/* Recent clients */}
-                    <section className="dashboard-panel">
-                        <div className="dashboard-panel-header">
-                            <h2>Recent</h2>
-                            <span>Recently viewed</span>
+                    <div className="dashboard-summary">
+                        <div className="summary-card summary-card-primary">
+                            <span>Total clients: </span>
+                            <strong>128 </strong>
+                            <small>+12 this month</small>
                         </div>
 
                         <div className="recent-list">
 
-                            <button className="recent-client">
-                                <strong>Matthew steen</strong>
-                                <small>Recently viewed</small>
-                            </button>
+                         <button className="recent-client" type="button">
+                                Matthew Steen
+                         </button>
 
-                            <button className="recent-client">
-                                <strong>Branda Stop</strong>
-                                <small>Recently viewed</small>
-                            </button>
+                         <button className="recent-client" type="button">
+                                Branda Stop
+                          </button>
 
-                            <button className="recent-client">
-                                <strong>Robert Johnson</strong>
-                                <small>Recently viewed</small>
-                            </button>
+                         <button className="recent-client" type="button">
+                                Robert Johnson
+                          </button>
 
                         </div>
-                    </section>
+                        <div className="summary-card">
+                            <span>Documents uploaded: </span>
+                            <strong>94% </strong>
+                            <small>Above target</small>
+                        </div>
+                    </div>
 
+                    <div className="dashboard-search">
+                        <input
+                            type="text"
+                            placeholder="Search clients by name, email, or phone..."
+                        />
+                        <button type="button">
+                            &#128269;
+                        </button>
+                    </div>
+
+                    <div className="dashboard-columns">
+                        <section className="dashboard-panel">
+                            <div className="dashboard-panel-header">
+                                <h2>Client List</h2>
+                                <span>All clients</span>
+                            </div>
+
+                            <div className="client-list">
+                                <button className="client-card client-card-row">
+                                    <div className="client-card-cell client-name-cell">
+                                        <span className="client-label">Name: </span>
+                                        <strong>Matthew Steen</strong>
+                                    </div>
+                                    <div className="client-card-cell">
+                                        <span className="client-label">Email: </span>
+                                        <small>MSteen@example.com</small>
+                                    </div>
+                                    <div className="client-card-cell">
+                                        <span className="client-label">Phone: </span>
+                                        <small>417-893-1689</small>
+                                    </div>
+                                    <div className="client-card-cell client-address-cell">
+                                        <span className="client-label">Address: </span>
+                                        <small>123 Question Street</small>
+                                    </div>
+                                    <span className="status-badge status-badge-ok">Active</span>
+                                </button>
+
+                                <button className="client-card client-card-row">
+                                    <div className="client-card-cell client-name-cell">
+                                        <span className="client-label">Name: </span>
+                                        <strong>Branda Stop</strong>
+                                    </div>
+                                    <div className="client-card-cell">
+                                        <span className="client-label">Email: </span>
+                                        <small>StopB@example.com</small>
+                                    </div>
+                                    <div className="client-card-cell">
+                                        <span className="client-label">Phone: </span>
+                                        <small>617-290-9164</small>
+                                    </div>
+                                    <div className="client-card-cell client-address-cell">
+                                        <span className="client-label">Address: </span>
+                                        <small>384 Oak Street</small>
+                                    </div>
+                                    <span className="status-badge status-badge-warn">Review</span>
+                                </button>
+
+                                <button className="client-card client-card-row">
+                                    <div className="client-card-cell client-name-cell">
+                                        <span className="client-label">Name: </span>
+                                        <strong>Robert Johnson</strong>
+                                    </div>
+                                    <div className="client-card-cell">
+                                        <span className="client-label">Email: </span>
+                                        <small>robert@example.com</small>
+                                    </div>
+                                    <div className="client-card-cell">
+                                        <span className="client-label">Phone: </span>
+                                        <small>555-555-5555</small>
+                                    </div>
+                                    <div className="client-card-cell client-address-cell">
+                                        <span className="client-label">Address: </span>
+                                        <small>789 God Road</small>
+                                    </div>
+                                    <span className="status-badge">New</span>
+                                </button>
+                            </div>
+
+                            <button
+                                className="button button-primary dashboard-register"
+                                type="button"
+                                onClick={() => setCS('CLIENT_SELECTION')}
+                            >
+                                Register New Client
+                                <span aria-hidden="true">&#8594;</span>
+                            </button>
+                        </section>
+
+                        <section className="dashboard-panel">
+                            <div className="dashboard-panel-header">
+                                <h2>Recent</h2>
+                                <span>Recently viewed </span>
+                            </div>
+
+                            <div className="recent-list">
+                                <button className="recent-client">
+                                    <strong>Matthew Steen </strong>
+                                    <small>Recently viewed </small>
+                                </button>
+
+                                <button className="recent-client">
+                                    <strong>Branda Stop </strong>
+                                    <small>Recently viewed</small>
+                                </button>
+
+                                <button className="recent-client">
+                                    <strong>Robert Johnson </strong>
+                                    <small>Recently viewed </small>
+                                </button>
+                            </div>
+                        </section>
+                    </div>
                 </div>
-
-            </div>
-        </ScreenShell>
-    );
-}
+            </ScreenShell>
+        );
+    }
 
     return (
         <ScreenShell eyebrow="SecretaryAI" title="Something went wrong." onBack={() => setCS('ROLE_SELECTION')}>
