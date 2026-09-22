@@ -552,6 +552,8 @@ export default function LandingPage() {
                         >
                             Register New Client
                             <span aria-hidden="true">&#8594;</span>
+                        <button className="dashboard-logout" type="button" onClick={handleLogout}>
+                            Log out
                         </button>
                     </div>
 
@@ -576,6 +578,10 @@ export default function LandingPage() {
                                 Robert Johnson
                           </button>
 
+                        <div className="summary-card">
+                            <span>Pending review: </span>
+                            <strong>18 </strong>
+                            <small>Needs follow-up</small>
                         </div>
                         <div className="summary-card">
                             <span>Documents uploaded: </span>
