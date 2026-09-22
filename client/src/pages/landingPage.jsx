@@ -617,7 +617,7 @@ export default function LandingPage() {
 
                             <div className="recent-list">
                                 <button className="recent-client">
-                                    <strong>Matthew Steen </strong>
+                                    <strong>Matthew Steen  </strong>
                                     <small>Recently viewed </small>
                                 </button>
 
