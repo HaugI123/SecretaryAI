@@ -51,6 +51,22 @@ app.post("/api/ocr", upload.single("document"), async (req, res) => {
 
     const {data} = await worker.recognize(req.file.buffer);
 
+    const lines =
+    data.lines ??
+    (data.blocks ?? [])
+    .flatMap(b => b.paragraphs)
+    .flatMap(p => p.lines);
+
+    const text = lines
+    .map(line =>
+    line.words
+    .filter(w => w.confidence >= 60)
+    .map(w => w.text)
+    .join(" ")
+    )
+    .filter(Boolean)
+    .join("\n");
+
     await worker.terminate();
 
     res.json({
